@@ -656,41 +656,6 @@ export async function groupsUpdate(groupsUpdate) {
   }
 }
 
-/**
-Delete Chat
- */
-export async function deleteUpdate(message) {
-  try {
-    const { fromMe, id } = message
-    const remoteJid = message.remoteJid || message.jid
-    const participant = message.participant || remoteJid
-    if (fromMe) return
-    const raw = await mongoLoadMessage(id, remoteJid, process.env.DB_NAME || 'guru_bot')
-    if (!raw) return
-    const msg = this.serializeM(raw)
-    if (!msg) return
-    const chat = global.db.data.chats[msg.chat] || {}
-    if (!chat.antiDelete) return
-
-    await this.reply(
-      msg.chat,
-      `
-            ≡ deleted a message 
-            ┌─⊷  𝘼𝙉𝙏𝙄 𝘿𝙀𝙇𝙀𝙏𝙀 
-            ▢ *Number :* @${participant.split`@`[0]} 
-            └─────────────
-            `.trim(),
-      msg,
-      {
-        mentions: [participant],
-      }
-    )
-    this.copyNForward(msg.chat, msg, false).catch(e => console.log(e, msg))
-  } catch (e) {
-    console.error(e)
-  }
-}
-
 /*
  Polling Update 
 */
